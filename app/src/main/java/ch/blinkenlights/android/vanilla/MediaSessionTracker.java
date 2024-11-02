@@ -131,6 +131,7 @@ public class MediaSessionTracker {
 				metadataBuilder.putLong(MediaMetadataCompat.METADATA_KEY_TRACK_NUMBER, service.getTimelinePosition() + 1);
 				metadataBuilder.putLong(MediaMetadataCompat.METADATA_KEY_NUM_TRACKS, service.getTimelineLength());
 			}
+			service.saveState(service.mMediaPlayer != null ? service.mMediaPlayer.getCurrentPosition() : 0);
 			mMediaSession.setMetadata(metadataBuilder.build());
 		}
 

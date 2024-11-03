@@ -1048,13 +1048,19 @@ public final class PlaybackService extends Service
 				if (mMediaPlayerInitialized)
 					mMediaPlayer.pause();
 
-				// We are switching into background mode. The notification will be removed
-				// unless we forcefully show it (or the user selected to always show it)
-				// In both cases we will update the notification to reflect the
+				if (Build.VERSION.SDK_INT < 31) {
+					// We are switching into background mode (however, we only do that for
+					// versions before Android 12, as starting from 12 (SDK version 31)
+					// starting a foreground job from an application in the background
+					// trigger a ForegroundServiceStartNotAllowedException)
+					// The notification will be removed.
+					// unless we forcefully show it (or the user selected to always show it)
+					boolean removeNotification = (mForceNotificationVisible == false && mNotificationVisibility != VISIBILITY_ALWAYS);
+					stopForeground(removeNotification);
+				}
+				// We will update the notification in any case to reflect the
 				// actual playback state (or to hit cancel() as this is required to
 				// get rid of it if it was created via notify())
-				boolean removeNotification = (mForceNotificationVisible == false && mNotificationVisibility != VISIBILITY_ALWAYS);
-				stopForeground(removeNotification);
 				updateNotification();
 
 				// Delay entering deep sleep. This allows the headset
